@@ -16,7 +16,7 @@ class Settingpage extends StatelessWidget {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser;
   var title = "??";
-  int time = 0;
+  var time = "?";
   int priority = 0;
   var category = "??";
   var title1 = "??";
@@ -45,13 +45,13 @@ class Settingpage extends StatelessWidget {
                         await firestore.collection('ToDo').doc('ToDoo2').get();
                     title1 = data['Title'];
                     priority = data['priority'];
-                    time = data['time'];
+                    DateTime dateTime = data["time"].toDate();
                     category = data['category'];
                     firestore.collection(user!.uid).doc().set({
                       "Title": '$title1',
                       "priority": priority,
                       "category": category,
-                      "time": time,
+                      "time": dateTime,
                       "Completion": false
                     });
                     Navigator.push(

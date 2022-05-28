@@ -102,6 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 6.0,),
               //비밀번호 입력
               TextFormField(
+                obscureText: true,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide(width: 1, color:const Color(0xffbD5D5D5)),
