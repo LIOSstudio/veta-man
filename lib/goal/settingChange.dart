@@ -12,19 +12,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
 
-class Settingpage extends StatelessWidget {
-  const Settingpage({Key? key}) : super(key: key);
+class SettingChange extends StatelessWidget {
+  const SettingChange({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-    ),
-    ),
+          primarySwatch: Colors.blue,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+          ),
+        ),
         home: ChangeNotifierProvider(
             create: (context) {
               return selectedProvider();},
@@ -71,20 +71,30 @@ class _SettingpageState extends State<_Settingpage> {
     "Job prepare"
   ];
 
+  var bt1 = const Color(0xffbFF6D6D);
+
+  var bt2 = const Color(0xffbFFB36D);
+
+  var bt3 = const Color(0xffbFFE86D);
+
+  var bt4 = const Color(0xffb9CFF6D);
+
+  var bt5 = const Color(0xffb6DA8FF);
+
   @override
   Widget build(BuildContext context) {
     _selecteProvider = Provider.of<selectedProvider>(context, listen: false);
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          elevation: 0,
+            elevation: 0,
             foregroundColor: const Color(0xffb936DFF),
             backgroundColor: Colors.white,
             actions: [
               ElevatedButton(
                   onPressed: () async {
                     DocumentSnapshot data =
-                        await firestore.collection('ToDo').doc('ToDoo2').get();
+                    await firestore.collection('ToDo').doc('ToDoo2').get();
                     title1 = data['Title'];
                     priority = data['priority'];
                     dateTime = data["time"];
@@ -96,7 +106,7 @@ class _SettingpageState extends State<_Settingpage> {
                       "time": dateTime,
                       "Completion": false
                     });
-                    firestore.collection('ToDo').doc('selected').set({
+                    firestore.collection('ToDo').doc('ToDoo2').set({
                       "selected_time" : "Expected time"
                     });
                     Navigator.push(
@@ -122,17 +132,17 @@ class _SettingpageState extends State<_Settingpage> {
               child: TextField(
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: const InputDecoration(
-              border: OutlineInputBorder(
-              borderSide: BorderSide(width: 1, color:const Color(0xffbD5D5D5)),
-            ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(width: 1, color:const Color(0xffb936DFF)),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelText: 'Please enter title',
-        labelStyle: TextStyle(color: const Color(0xffD5D5D5))
-    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1, color:const Color(0xffbD5D5D5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1, color:const Color(0xffb936DFF)),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: 'Please enter title',
+                    labelStyle: TextStyle(color: const Color(0xffD5D5D5))
+                ),
                 onChanged: (value) {
                   title = value;
                   firestore
@@ -167,37 +177,37 @@ class _SettingpageState extends State<_Settingpage> {
                 width: 250,
                 height: 50,
                 child: ElevatedButton (
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  int selected_hour = 0;
-                                  int selected_minute = 0;
-                                  String selectedTime = "";
-                                  FirebaseFirestore firestore = FirebaseFirestore.instance;
-                                  return CustomHourPicker(
-                                      elevation: 2,
-                                      onPositivePressed: (context, time) {
-                                    selected_hour = time.hour;
-                                    selected_minute = time.minute;
-                                    selectedTime = "$selected_hour" + ":" + "$selected_minute";
-                                    print(selectedTime);
-                                    firestore.collection('ToDo').doc('ToDoo2').update({"selected_time": selectedTime,
-                                      "time": time.hour});
-                                    _selecteProvider.timeselect();
-                                    Navigator.pop(context);
-                                  },
-                                  onNegativePressed: (context) {
-                                  Navigator.pop(context);
-                                  },);
-                                },
-                              );
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          int selected_hour = 0;
+                          int selected_minute = 0;
+                          String selectedTime = "";
+                          FirebaseFirestore firestore = FirebaseFirestore.instance;
+                          return CustomHourPicker(
+                            elevation: 2,
+                            onPositivePressed: (context, time) {
+                              selected_hour = time.hour;
+                              selected_minute = time.minute;
+                              selectedTime = "$selected_hour" + ":" + "$selected_minute";
+                              print(selectedTime);
+                              firestore.collection('ToDo').doc('ToDoo2').update({"selected_time": selectedTime,
+                                "time": time.hour});
+                              _selecteProvider.timeselect();
+                              Navigator.pop(context);
                             },
-                            child: Text(Provider.of<selectedProvider>(context).selectedTime.toString()),
-                            style: TextButton.styleFrom(
-                                primary: Colors.black,
-                                backgroundColor: Colors.white,
-                                minimumSize: Size(40, 50)))),
+                            onNegativePressed: (context) {
+                              Navigator.pop(context);
+                            },);
+                        },
+                      );
+                    },
+                    child: Text(Provider.of<selectedProvider>(context).selectedTime.toString()),
+                    style: TextButton.styleFrom(
+                        primary: Colors.black,
+                        backgroundColor: Colors.white,
+                        minimumSize: Size(40, 50)))),
             SizedBox(
               height: 15,
             ),
@@ -218,9 +228,9 @@ class _SettingpageState extends State<_Settingpage> {
             Container(
               height: 20,
               child: Text("       "),
-              ),
+            ),
             Container(
-              padding: EdgeInsets.only(left:20),
+                padding: EdgeInsets.only(left:20),
                 width: 350,
                 height: 60,
                 child: Row(
@@ -232,13 +242,14 @@ class _SettingpageState extends State<_Settingpage> {
                         mini: true,
                         heroTag: 'pri1',
                         child: Text(" "),
-                        backgroundColor: const Color(0xffbFF6D6D),
+                        backgroundColor: bt1,
                         onPressed: () {
-                          priority = 1;
+                          priority = 2;
                           firestore
                               .collection('ToDo')
                               .doc('ToDoo2')
                               .update({"priority": priority});
+                          bt1 = const Color(0xffb936DFF);
                         },
                       ),
                     ),
@@ -326,19 +337,19 @@ class _SettingpageState extends State<_Settingpage> {
               height: 30,
             ),
             Container(
-                width: 355,
-                height: 20,
-                child: Row(
-                  children: [
-                    Expanded(
-                        flex: 1,
-                        child: Container(
-                            child: Image.asset('assets/cate.png'), width: 5)),
-                    Expanded(
-                        flex: 4,
-                        child: Text("Category setting"))
-                  ],
-                ),
+              width: 355,
+              height: 20,
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Container(
+                          child: Image.asset('assets/cate.png'), width: 5)),
+                  Expanded(
+                      flex: 4,
+                      child: Text("Category setting"))
+                ],
+              ),
             ),
             SizedBox(
               height: 15,
@@ -373,11 +384,11 @@ class _SettingpageState extends State<_Settingpage> {
                         // After selecting the desired option,it will
                         // change button value to selected value
                         onChanged: (String? newValue) {
-                            selected_value = newValue!;
-                            firestore
-                                .collection('ToDo')
-                                .doc('ToDoo2')
-                                .update({"category": selected_value});
+                          selected_value = newValue!;
+                          firestore
+                              .collection('ToDo')
+                              .doc('ToDoo2')
+                              .update({"category": selected_value});
                         },
                       ),
                     ),

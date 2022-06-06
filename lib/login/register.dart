@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -12,6 +13,9 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   //파이어베이스 시작
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser;
   final _authentication = FirebaseAuth.instance;
   // bool isSignupscreen = true;
   final _formKey = GlobalKey<FormState>();
@@ -140,14 +144,38 @@ class _RegisterPageState extends State<RegisterPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   onPressed: () async {
+
                     // _tryValidation();
                     print(userEmail);
                     print(userPassword);
                     try {
+                      final userID = _authentication;
                       final newUser =
                           await _authentication.createUserWithEmailAndPassword(
                               email: userEmail, password: userPassword);
                       if (newUser.user != null) {
+                        print(newUser.user!.uid);
+                        firestore.collection(newUser.user!.uid).doc().set({
+                          "Title": 'Study',
+                          "priority": 1,
+                          "category": "Study",
+                          "time": 1.5,
+                          "Completion": false
+                        });
+                        firestore.collection(newUser.user!.uid).doc().set({
+                          "Title": 'Assignment',
+                          "priority": 2,
+                          "category": "Study",
+                          "time": 2,
+                          "Completion": false
+                        });
+                        firestore.collection(newUser.user!.uid).doc().set({
+                          "Title": 'Pull-up',
+                          "priority": 4,
+                          "category": "Exercise",
+                          "time": 0.5,
+                          "Completion": false
+                        });
                         Navigator.push(
                           context,
                           MaterialPageRoute(
