@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'char1.dart';
 import 'schedule.dart';
 import 'Mypage.dart';
 import 'chart.dart';
@@ -18,7 +19,7 @@ class _NavigationState extends State<NavigationPage> {
   final List<Widget> _children = [
     nameinput(),
     Timetable(),
-    ChartPage(),
+    Chart1Page(),
     MyPage(),
   ];
   void onTap(int index) {

@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_pickerr/time_pickerr.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import '../navigationbar.dart';
 import 'settingpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+
+bool isTutorial = false;
+String priority='';
+int time=0;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -42,6 +50,130 @@ class _nameinputState extends State<nameinput> {
   final formKey = GlobalKey<FormState>();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser;
+  //tutorial? ?? ?
+  late TutorialCoachMark tutorialCoachMark;
+  List<TargetFocus> targetsList = [];
+
+  final GlobalKey key1 = GlobalKey();
+  final GlobalKey key2 = GlobalKey();
+
+  //?? ??
+
+  void initTarget(String script, String des, GlobalKey tutorialkey) {
+    print("init Target ??");
+    targetsList.add(
+      TargetFocus(
+        identify: "Target 0",
+        keyTarget: tutorialkey,
+        color: Color(0xff936DFF),
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      script,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom:20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              des,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                controller.previous();
+                              },
+                              icon: Icon(Icons.chevron_left),
+                              iconSize: 40,
+                              color: Colors.white,
+
+                            ),
+                          ],
+                        )
+
+
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+        ],
+        // shape: ShapeLightFocus.Circle,
+        // radius: 5,
+      ),
+    );}
+
+  void showTutorial() {
+    if (!isTutorial) {
+      print("??? ?? show tutorial?");
+      isTutorial = true;
+      tutorialCoachMark = TutorialCoachMark(context,
+        targets: targetsList, colorShadow: Colors.black, opacityShadow: 0.85,
+        onFinish: () {
+          print("finish");
+        },
+        onClickTarget: (target) {
+          print('????? onClickTarget: $target');
+        },
+        onClickTargetWithTapPosition: (target, tapDetails) {
+          print("???? target: $target");
+          print("clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+        },
+        onClickOverlay: (target) {
+          print('onClickOverlay: $target');
+        },
+        onSkip: () {
+          print("skip");
+        },
+
+      )
+        ..show();
+    }
+    else {
+      print("?? ? ? ?? ??");
+    }
+  }
+
+
+
+  @override
+  void initState(){
+    /// TODO:
+    /// ??? : firebase CRUD, where
+    /// https://github.com/kdjun97/tci-me-project/blob/main/lib/select_teach_learn.dart
+    /// where ??? ??
+    /// 1. firebase ??? ???. FirebaseAuth.instance.currentUser.uid ??? ??? ??.
+    /// 2. Home Tutorial collection? uid document ? field ??(?? ?? isTutorial:false ?? ??)
+    /// 3. ?? false?? showTutorial() ?? true?? ?????
+    /// 4. showTutorial ???? onFinish()??, DB field ????(???? ??? true?)
+    /// 4?? ???? ?? ??? : firebase update
+    /// collection ?? : HomeTutorial, document ?? : ?? uid (FirebaseAuth.instance.currentUser.uid ?? ??)
+    /// HomeTutorial (bool)isTutorial ??? 2? ?? ??.
+    /// ?????, HomeTutorial ??? ??? false? ? ?.
+
+
+
+    print("In initState@@@@@@@@@@@@@@@@@@@@@@@@");
+    initTarget("? ?? ?????","?? ? ??? ??? ? ???",key1);
+    initTarget("? ?? ?? ?? ?????","???? ?????? ????? ??? ? ???.",key2);
+    Future.delayed(Duration(microseconds: 100), showTutorial);
+    super.initState();
+    print("???? initState@@@@@@@@@@@@@@@@@@@@@@@@");
+  }
 
 
   @override
@@ -66,11 +198,11 @@ class _nameinputState extends State<nameinput> {
             child: Center(
                 child: Column(children: [
                   Container(
-                      margin: const EdgeInsets.only(bottom: 40, top: 10),
-                      height: 70,
+                      margin: EdgeInsets.only(bottom: 40, top: 10),
+                      height: 56,
                       width: 323,
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
+                        borderRadius: BorderRadius.all(
                           Radius.circular(10),
                         ),
                         border: Border.all(
@@ -78,10 +210,21 @@ class _nameinputState extends State<nameinput> {
                           width: 1,
                         ),
                       ),
-                      child: const Center(
-                        child: Text("Do not try to be original"),
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => quotesPage()));
+                          },
+                          child: Hero(
+                            tag: 'text',
+                            child: Text(
+                                "???? ???? ?? ???? ????\n?? ??? ???? ??? ???? ?? ????"),
+                          ),
+                        ),
                       )),
                   Container(
+                    key : key2,
                     child: SizedBox(
                       height: 350,
                       child: Center(
@@ -116,6 +259,21 @@ class _nameinputState extends State<nameinput> {
                                       itemCount: docs.length,
                                       itemBuilder: (context, index) {
                                         final item = docs[index];
+                                        /////??? ???//////
+                                        //????? ???? ??? ?? ???? ??? ??? ??.
+                                        if (item['priority']==1){
+                                          priority = '?? ??';
+                                        }else if(item['priority']==2){
+                                          priority = '??';
+                                        }else if(item['priority']==3){
+                                          priority = '??';
+                                        }else if(item['priority']==4){
+                                          priority = '??';
+                                        }else{
+                                          priority = '?? ??';
+                                        }
+                                        //??? ?????? ??,???? ?
+                                        ////////////////////////
                                         return Slidable(
                                           key: ValueKey(index),
                                           child: buildListTile(item),
@@ -168,6 +326,7 @@ class _nameinputState extends State<nameinput> {
                         Expanded(
                           flex: 3,
                           child: FloatingActionButton(
+                            key: key1,
                             elevation: 0,
                             backgroundColor: const Color(0xffb936DFF),
                             onPressed: () {
@@ -208,42 +367,153 @@ class _nameinputState extends State<nameinput> {
     ),
     tileColor: choiceColor(item),
     onTap: () {
-      showDialog(
-          context: context,
-          //barrierDismissible - Dialog? ??? ?? ?? ?? x
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              // RoundedRectangleBorder - Dialog ?? ??? ??? ??
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              //Dialog Main Title
-              title: Column(
-                children: <Widget>[
-                  new Text("Dialog Title"),
-                ],
-              ),
-              //
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    item["Title"],
+      //////??? ???//////////////
+      showModalBottomSheet<void>(
+
+
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        builder: (BuildContext context) {
+
+          return Container(
+            height: 800,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: [
+
+                    Expanded(child: Container(
+                      child:Row(
+                        children:[
+                          Padding(
+                            padding:EdgeInsets.only(left:20),
+                            child: Text(item['Title'],style: TextStyle(fontSize: 20)), //??
+                          ),
+
+
+                        ],
+                      ),
+                    )),
+                    IconButton(
+                      icon: Icon(Icons.close_rounded, color: Colors.black),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+
+                  ],
+                ),
+                const Divider(
+                  height: 20,
+                  color: Colors.black,
+                  thickness: 0.5,
+                ),
+                Padding(padding:EdgeInsets.only(left: 30.0,right: 10.0),
+                  child:Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children:[
+                              CircleAvatar(
+                                radius: 4,
+                                backgroundColor: Color(0xffb936DFF),
+                              ),
+                              Text('  Lead time',style: TextStyle(fontSize: 20),)
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            child:Text(item['time'].toString()),
+
+                          ),//LEAD TIME???
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            children:[
+                              CircleAvatar(
+                                radius: 4,
+                                backgroundColor: Color(0xffb936DFF),
+                              ),
+                              Text('  Importance',style: TextStyle(fontSize: 20),),
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                              child:Text('      '+priority,style: TextStyle(fontSize: 15),)
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            children:[
+                              CircleAvatar(
+                                radius: 4,
+                                backgroundColor: Color(0xffb936DFF),
+                              ),
+                              Text('  Category',style: TextStyle(fontSize: 20),),
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                              child:Text('      '+item['category'],style: TextStyle(fontSize: 15))
+
+                          ),//?????
+
+
+                        ],
+
+                      ),
+                      SizedBox(
+                        height: 100,
+                      ),
+                      Column(
+
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ElevatedButton(
+
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(primary: Color(0xff936DFF),
+                                shape: RoundedRectangleBorder(
+                                  // shape : ??? ??? ??? ?? ??
+
+                                    borderRadius: BorderRadius.circular(5.0)
+                                ),
+                                elevation: 0.0),
+                            child:Text('??'),
+                          ),
+                        ],
+                      ),
+
+
+
+
+
+
+                    ],
+
                   ),
-                ],
-              ),
-              actions: <Widget>[
-                new FlatButton(
-                  child: new Text("??"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
                 ),
               ],
-            );
-          });
-      });}
+            ),
+          );
+        },
+      ).then((value) { setState(() { }); });
+    },);}
 
 choiceColor(item) {
   if(item['Completion'] == false) {
@@ -253,4 +523,26 @@ choiceColor(item) {
   }
 }
 
+class quotesPage extends StatelessWidget {
+  const quotesPage({Key? key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+            child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NavigationPage()),
+                  );
+                },
+                child: Hero(
+                    tag: 'image',
+                    child: Image.asset(
+                      'assets/hahyul.jpeg',
+                      width: 1080,
+                      height: 2340,
+                    )))));
+  }
+}

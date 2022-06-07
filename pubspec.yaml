@@ -51,6 +51,8 @@ dependencies:
   flutter_timetable_view: ^0.2.0
   provider: ^6.0.3
   tutorial_coach_mark: ^1.2.3
+  intl: ^0.17.0
+  email_validator: ^1.0.6
 
 
 dev_dependencies:
@@ -97,6 +99,7 @@ flutter:
     - assets/sp2.png
     - assets/sp3.png
     - assets/sp4.png
+    - assets/hahyul.jpeg
 
 
   # To add assets to your application, add an assets section, like this:
