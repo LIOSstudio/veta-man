@@ -206,7 +206,51 @@ class _nameinputState extends State<nameinput> {
       item['Title'],
       style: const TextStyle(fontSize: 16),
     ),
+    tileColor: choiceColor(item),
     onTap: () {
+      showDialog(
+          context: context,
+          //barrierDismissible - Dialog? ??? ?? ?? ?? x
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              // RoundedRectangleBorder - Dialog ?? ??? ??? ??
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              //Dialog Main Title
+              title: Column(
+                children: <Widget>[
+                  new Text("Dialog Title"),
+                ],
+              ),
+              //
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    item["Title"],
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text("??"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
       });}
+
+choiceColor(item) {
+  if(item['Completion'] == false) {
+    return Colors.white;
+  } else {
+    return Colors.grey;
+  }
+}
 
 
