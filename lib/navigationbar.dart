@@ -4,7 +4,7 @@ import 'char1.dart';
 import 'schedule.dart';
 import 'Mypage.dart';
 import 'chart.dart';
-import 'goal/py1.dart';
+import 'package:veta/Goal&MainPage/mainPage.dart';
 
 class NavigationPage extends StatefulWidget {
   static final title = 'salomon_bottom_bar';
@@ -17,7 +17,7 @@ class _NavigationState extends State<NavigationPage> {
   var _currentIndex = 0;
 
   final List<Widget> _children = [
-    nameinput(),
+    MainPage(),
     Timetable(),
     Chart1Page(),
     MyPage(),

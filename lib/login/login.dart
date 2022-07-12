@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:veta/login/register.dart';
 import 'package:veta/navigationbar.dart';
 
-import '../goal/py1.dart';
+import 'package:veta/Goal&MainPage/mainPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -64,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 12.0),
               const TextField(
+                obscureText: true,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide(width: 1, color:const Color(0xffbD5D5D5)),

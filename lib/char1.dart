@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:veta/chart.dart';
 import 'pie_chart.dart';
 
 class Chart1Page extends StatefulWidget {
@@ -14,11 +13,7 @@ class _Chart1PageState extends State<Chart1Page> {
   final user = FirebaseAuth.instance.currentUser;
 
   int key = 0;
-  Map<String, double> dataMap = {
-    "Food": 5,
-    "Health": 3,
-    "Social Life": 2,
-  };
+
   late List<Task> _task = [];
 
   Map<String, double> getCategoryData() {
@@ -36,6 +31,7 @@ class _Chart1PageState extends State<Chart1Page> {
     return catMap;
   }
 
+  /* pidchart? ???? Color */
   final colorList = <Color>[
     Color(0xfffdcb6e),
     Color(0xff0984e3),
@@ -59,11 +55,81 @@ class _Chart1PageState extends State<Chart1Page> {
     ]
   ];
   bool _showGradientColors = false;
+
+  @override
+  Widget build(BuildContext context) {
+    void getExpfromSanapshot(snapshot) {
+      // ??? task? ??? Completion ? ??, piechart ? ??? task ? ??
+      print(snapshot.docs.length);
+      if (snapshot.docs.isNotEmpty) {
+        //  print("is Empty !");
+        _task = [];
+        for (int i = 0; i < snapshot.docs.length; i++) {
+          //  print("is not Empty !");
+          var a = snapshot.docs[i];
+          // print(a.data());
+          if (a['Completion'] == false) {
+          } else {
+            Task exp = Task.fromJson(a.data());
+            _task.add(exp);
+            // print(exp);
+          }
+        }
+      }
+    }
+
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+
+                /* data ? Completion ??? ? ???, piechart update? ?? StreamBuilder */
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection(user!.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text("something went wrong");
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (!snapshot.hasData) {
+                      return Container();
+                    }
+                    final data = snapshot.data!;
+                    print("Data: $data");
+                    getExpfromSanapshot(data);
+
+                    /* return ?? pieChart? ?????? Widget */
+                    return pieChartExampleOne();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget pieChartExampleOne() {
     return PieChart(
       key: ValueKey(key),
       //dataMap: dataMap,
+
+      /* Completion ? data? ??? ??? category? dataMap?? ??? */
       dataMap: getCategoryData(),
+
+      /* piechart ??? */
       animationDuration: Duration(milliseconds: 800),
       chartLegendSpacing: 48,
       chartRadius: math.min(MediaQuery.of(context).size.width / 3.2, 500),
@@ -99,75 +165,9 @@ class _Chart1PageState extends State<Chart1Page> {
       //centerText: 'Expense',
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> taskStream =
-    FirebaseFirestore.instance.collection(user!.uid).snapshots();
-    void getExpfromSanapshot(snapshot) {
-      print("!!!");
-      print(snapshot.docs.length);
-      if (snapshot.docs.isNotEmpty) {
-        print("is Empty !");
-        _task = [];
-        for (int i = 0; i < snapshot.docs.length; i++) {
-          print("is not Empty !");
-          var a = snapshot.docs[i];
-          // print(a.data());
-          if (a['Completion'] == false) {
-          } else {
-            Task exp = Task.fromJson(a.data());
-            _task.add(exp);
-            // print(exp);
-          }
-        }
-      }
-    }
-
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 50,
-                ),
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection(user!.uid)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text("something went wrong");
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-
-                    final data = snapshot.data!;
-                    print("Data: $data");
-                    getExpfromSanapshot(data);
-                    return pieChartExampleOne();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-Map<String, double> dataMap = {
-  "category": 4,
-  "Health": 3,
-  "Social Life": 2,
-};
-
+/* ? Task ?? ???? data?? Task?? Class ?? */
 class Task {
   bool Completion;
   String Title;
